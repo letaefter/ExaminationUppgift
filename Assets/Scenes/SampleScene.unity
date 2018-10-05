@@ -182,8 +182,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 9948429}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -3, z: 10}
   m_LocalScale: {x: 0.5408985, y: 1.4000587, z: 1}
   m_Children:
   - {fileID: 690477431}
@@ -193,8 +193,8 @@ Transform:
   - {fileID: 277902267}
   - {fileID: 519614159}
   - {fileID: 27597324}
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 534669905}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9948432
 MonoBehaviour:
@@ -207,7 +207,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8216b60794a937a499e2cb53dc68e015, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnRate: 0
+  turnRate: 145
+  spaceshipTransform: {fileID: 9948431}
 --- !u!1 &27597323
 GameObject:
   m_ObjectHideFlags: 0
@@ -622,7 +623,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 18
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -645,9 +646,10 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 9948431}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -919,17 +921,17 @@ TrailRenderer:
         inWeight: 0.55420494
         outWeight: 0
       - serializedVersion: 3
-        time: 0.7678165
+        time: 0.76552767
         value: 0.7424232
-        inSlope: 1.1266514
-        outSlope: 1.1266514
+        inSlope: -0.85195625
+        outSlope: -0.85195625
         tangentMode: 0
         weightedMode: 0
         inWeight: 1
-        outWeight: 0
+        outWeight: 0.92445815
       - serializedVersion: 3
-        time: 0.8942616
-        value: 0.5606017
+        time: 0.8873646
+        value: 0.4646392
         inSlope: 0.14894699
         outSlope: 0.14894699
         tangentMode: 0
@@ -937,8 +939,8 @@ TrailRenderer:
         inWeight: 0.72839534
         outWeight: 0
       - serializedVersion: 3
-        time: 0.958686
-        value: 0.4805044
+        time: 0.97247994
+        value: 0.42494714
         inSlope: -3.1871345
         outSlope: -3.1871345
         tangentMode: 0
