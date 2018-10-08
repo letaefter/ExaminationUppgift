@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnRate: 145
-  baseSpeed: 12.5
+  baseSpeed: 20
   Transform: {fileID: 0}
   cockpitWindow: {fileID: 519614160}
   undercarriageTriangle: {fileID: 184232271}
