@@ -6,12 +6,11 @@ public class SpaceshipScript : MonoBehaviour
 {
     float timerCount = 1;
     float growthOfTurnRate;
-    float minTurnRate;
-    float maxTurnRate;
+    float timerExtra;
     public float turnRate = 145;
-    public float baseSpeed = 10f;
+    public float baseSpeed;
     float determinesTurnRates;
-    public Transform Transform;
+    public Transform PerkTransfrom;
     //the names vvvvvv correspond to the names of the sprites in unity and every unique callsign should be assigned the same color.
     public SpriteRenderer cockpitWindow;
     public SpriteRenderer undercarriageTriangle;
@@ -30,8 +29,28 @@ public class SpaceshipScript : MonoBehaviour
     void Start()
     {
         //variabeln determinesTurnRates är variabeln som allt som handlar om hur skeppet rör sig 
-        //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp
+        //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
+        //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
+        RNGSpawnStart();
         determinesTurnRates = baseSpeed;
+
+    }
+    void RNGSpawnStart()
+    {
+        //här randomiseras två variabler som representerar X och Y, X variabeln randomiseras mellan 32 till 96
+        //och sedan subtraheras hela X's längd ifrån så effektivt är rangen ifrån -32f till 32f vilket är innanför synfältet och gränsen.
+        //Samma med Y fast med Y's skalor.
+        //sedan transformar jag Parenten till alla spritekomponenter på mitt skepp till koordinaterna som jag har fått
+        //i Space.World som betyder att den utgår ifrån kamerans position därför kameran är parent till min Sprite som
+        //är parent till resten av alla sprites i mitt skepp.
+        float rngX;
+        float rngY;
+        rngX = Random.Range(32f, 96f);
+        rngY = Random.Range(18f, 54f);
+        rngX = rngX - 64f;
+        rngY = rngY - 36f;
+        PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
+        baseSpeed = Random.Range(13f, 35f);
     }
 
     // Update is called once per frame
@@ -43,21 +62,18 @@ public class SpaceshipScript : MonoBehaviour
     }
     void Timer()
     {
+        //sämst
         timerCount = timerCount + Time.deltaTime;
-
-        {
-            Debug.Log(timerCount);
-        }
     }
     void BorderGuard()
     {
         //if you leave the coordinates which are covered by the camera you will be sent to the opposite coordinates on that vector
-        //nedan så sätter jag så att skeppets X och Y coordinater mäts av två variabler.
-        //själva skeppet är ett child till kameran och därför mäts koordinaterna ifrån kamerans position
+        //nedan så sätter jag så att skeppets X och Y koordinater mäts av två variabler.
+        //själva skeppet är ett child till kameran och därför mäts koordinaterna ifrån kamerans position där x0 och y0 är mittpunkten
         float SpaceshipValueOfX = transform.position.x;
         float SpaceshipValueOfY = transform.position.y;
         //nedan så säger jag att om skeppets X koordinat är större än kamerans gränser så ska den skickas till andra sidan av kameran dock med samma Y koordinat
-        //kamerans storlek är X = -32 till x = 32 och därför skickas man bak 64 på X och på y är den +-18 så man skickas 36 steg +-
+        //kamerans storlek är X = -32 till x = 32 och därför skickas man bak 64 på X och på y är den +-18 så man skickas 36 steg back eller fram
         if (SpaceshipValueOfX > 32f)
         {
             transform.Translate(-64f, 0f, 0f, Space.World);
@@ -77,6 +93,13 @@ public class SpaceshipScript : MonoBehaviour
     }
     void DrivingSpeedTurningAndMore()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+
+        }
+        //om man klickar på S så åker skeppet hälften så snabbt, om man släpper S så åker den lika snabbt igen,
+        //variabel determinesTurnRates påverkas också av S därför den ska hela tiden vara baseSpeed's värde
+        //som man har valt/som har blivit RNG:at i början av spelet
         if (Input.GetKey(KeyCode.S))
         {
             if (Input.GetKeyDown(KeyCode.S))
@@ -102,28 +125,25 @@ public class SpaceshipScript : MonoBehaviour
                 turnRate = 0f;
                 determinesTurnRates = 0f;
             }
-            if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+            //om du håller in A eller D så ändras dessa följande stycken vid första framen 
+            //så att det blir rätt färg på skeppet och hur snabbt skeppet svänger åt vardera håll
+            //det svänger snabbare till vänster än till höger, det baseras på skeppets bashastighet
+            //så ett jätte långsamt skepp kommer inte svänga hur mycket grövre som helst
+            if (Input.GetKeyDown(KeyCode.A))
             {
-                //om du håller in A eller D så ändras dessa två följande stycken vid första framen 
-                //så att det blir rätt färg på skeppet och hur snabbt skeppet svänger åt vardera håll
-                //det svänger snabbare till vänster än till höger, det baseras på skeppets bashastighet
-                //så ett jätte långsamt skepp kommer inte svänga hur mycket grövre som helst
-
                 //this color is green
                 colorHexagonFuselage = new Color(0.1f, 0.55f, 0.1f, 1f);
                 colorUndercarriageTriangle = new Color(0.1f, 0.75f, 0.2f, 1f);
                 colorCockpitWindow = new Color(0.2f, 0.99f, 0.6f, 1f);
                 turnRate = determinesTurnRates * 4.5f;
-
             }
-            if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyUp(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.D))
             {
                 //this color is blue
                 colorHexagonFuselage = new Color(0f, 0.075f, 0.65f, 1f);
                 colorUndercarriageTriangle = new Color(0.1f, 0.2f, 0.9f, 1f);
                 colorCockpitWindow = new Color(0f, 0.6f, 0.95f, 1f);
                 turnRate = determinesTurnRates * 15f;
-
             }
             if (Input.GetKey(KeyCode.A))
             {
@@ -140,7 +160,25 @@ public class SpaceshipScript : MonoBehaviour
                     colorUndercarriageTriangle = new Color(0.1f, 0.75f, 0.2f, 1f);
                     colorCockpitWindow = new Color(0.2f, 0.99f, 0.6f, 1f);
                     turnRate = determinesTurnRates * 4.5f;
-
+                }
+                if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D) == false)
+                {
+                    if (Input.GetKey(KeyCode.A) && Input.GetKeyUp(KeyCode.D))
+                    {
+                        if (Input.GetKey(KeyCode.S))
+                        {
+                            determinesTurnRates = baseSpeed * 2;
+                        }
+                        else
+                        {
+                            determinesTurnRates = baseSpeed;
+                        }
+                        //this color is green
+                        colorHexagonFuselage = new Color(0.1f, 0.55f, 0.1f, 1f);
+                        colorUndercarriageTriangle = new Color(0.1f, 0.75f, 0.2f, 1f);
+                        colorCockpitWindow = new Color(0.2f, 0.99f, 0.6f, 1f);
+                        turnRate = determinesTurnRates * 4.5f;
+                    }
                 }
             }
             if (Input.GetKey(KeyCode.D))
@@ -151,24 +189,33 @@ public class SpaceshipScript : MonoBehaviour
                 {
                     turnRate = determinesTurnRates * 50f;
                 }
-                if (Input.GetKey(KeyCode.A))
+                if (Input.GetKeyDown(KeyCode.A))
                 {
-                    if (Input.GetKeyDown(KeyCode.A))
+                    //this color is blue
+                    colorHexagonFuselage = new Color(0f, 0.075f, 0.65f, 1f);
+                    colorUndercarriageTriangle = new Color(0.1f, 0.2f, 0.9f, 1f);
+                    colorCockpitWindow = new Color(0f, 0.6f, 0.95f, 1f);
+                }
+                if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.A) == false)
+                {
+                    if (Input.GetKey(KeyCode.D) && Input.GetKeyUp(KeyCode.A))
                     {
+                        if (Input.GetKey(KeyCode.S))
+                        {
+                            determinesTurnRates = baseSpeed * 2;
+                        }
+                        else
+                        {
+                            determinesTurnRates = baseSpeed;
+                        }
                         //this color is blue
                         colorHexagonFuselage = new Color(0f, 0.075f, 0.65f, 1f);
                         colorUndercarriageTriangle = new Color(0.1f, 0.2f, 0.9f, 1f);
                         colorCockpitWindow = new Color(0f, 0.6f, 0.95f, 1f);
-                    }
-                    if (Input.GetKeyUp(KeyCode.D))
-                    {
-                        //this color is green
-                        colorHexagonFuselage = new Color(0.1f, 0.55f, 0.1f, 1f);
-                        colorUndercarriageTriangle = new Color(0.1f, 0.75f, 0.2f, 1f);
-                        colorCockpitWindow = new Color(0.2f, 0.99f, 0.6f, 1f);
-
+                        turnRate = determinesTurnRates * 15f;
                     }
                 }
+
             }
         }
         if (determinesTurnRates == 0f)
