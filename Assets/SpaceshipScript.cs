@@ -42,6 +42,16 @@ public class SpaceshipScript : MonoBehaviour
         //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
         RNGSpawnStart();
         determinesTurnRates = baseSpeed;
+        colorRhexagon = 0.93f;
+        colorGhexagon = 0.1041f;
+        colorBhexagon = 0.944f;
+        colorRtriangle = 0.9902f;
+        colorGtriangle = 0.4764f;
+        colorBtriangle = 1f;
+        colorRcockpit = 0.923f;
+        colorGcockpit = 0.748f;
+        colorBcockpit = 1f;
+
 
     }
     void RNGSpawnStart()
