@@ -11,6 +11,15 @@ public class SpaceshipScript : MonoBehaviour
     public float baseSpeed;
     float determinesTurnRates;
     public Transform PerkTransfrom;
+    float colorRNGhexagon;
+    float colorRNGhexagon1;
+    float colorRNGhexagon2;
+    float colorRNGtriangle;
+    float colorRNGtriangle1;
+    float colorRNGtriangle2;
+    float colorRNGcockpit;
+    float colorRNGcockpit1;
+    float colorRNGcockpit2;
     //the names vvvvvv correspond to the names of the sprites in unity and every unique callsign should be assigned the same color.
     public SpriteRenderer cockpitWindow;
     public SpriteRenderer undercarriageTriangle;
@@ -50,8 +59,7 @@ public class SpaceshipScript : MonoBehaviour
         rngX = rngX - 64f;
         rngY = rngY - 36f;
         PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(10f, 21f);
-    }
+        baseSpeed = Random.Range(10f, 21f);    }
 
     // Update is called once per frame
     void Update()
@@ -105,7 +113,18 @@ public class SpaceshipScript : MonoBehaviour
         transform.Translate(0f, baseSpeed * Time.deltaTime, 0f, Space.Self);
         if (Input.GetKeyDown(KeyCode.Space))
         {
-
+            colorRNGhexagon = Random.Range(0f, 1f);
+            colorRNGhexagon1 = Random.Range(0f, 1f);
+            colorRNGhexagon2 = Random.Range(0f, 1f);
+            colorRNGtriangle = Random.Range(0f, 1f);
+            colorRNGtriangle1 = Random.Range(0f, 1f);
+            colorRNGtriangle2 = Random.Range(0f, 1f);
+            colorRNGcockpit = Random.Range(0f, 1f);
+            colorRNGcockpit1 = Random.Range(0f, 1f);
+            colorRNGcockpit2 = Random.Range(0f, 1f);
+            colorHexagonFuselage = new Color(colorRNGhexagon, colorRNGhexagon1, colorRNGhexagon2, 1f);
+            colorUndercarriageTriangle = new Color(colorRNGtriangle, colorRNGtriangle1, colorRNGtriangle2, 1f);
+            colorCockpitWindow = new Color(colorRNGcockpit, colorRNGcockpit1, colorRNGcockpit2, 1f);
         }
         //om man klickar på S så åker skeppet hälften så snabbt, om man släpper S så åker den lika snabbt igen,
         //variabel determinesTurnRates påverkas också av S därför den ska hela tiden vara baseSpeed's värde
@@ -230,6 +249,12 @@ public class SpaceshipScript : MonoBehaviour
                 {
                     turnRate = 0f;
                     determinesTurnRates = 0f;
+                    if (Input.GetKeyDown(KeyCode.A) || Input.GetKey(KeyCode.D))
+                    {
+                        colorHexagonFuselage = new Color(0.05f, 0.28f, 0.38f, 1f);
+                        colorUndercarriageTriangle = new Color(0.1f, 0.48f, 0.55f, 1f);
+                        colorCockpitWindow = new Color(0.1f, 0.8f, 0.78f, 1f);
+                    }
                 }
             }
         }
