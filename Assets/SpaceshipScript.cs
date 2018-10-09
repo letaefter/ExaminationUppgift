@@ -50,7 +50,7 @@ public class SpaceshipScript : MonoBehaviour
         rngX = rngX - 64f;
         rngY = rngY - 36f;
         PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(13f, 35f);
+        baseSpeed = Random.Range(10f, 21f);
     }
 
     // Update is called once per frame
@@ -93,6 +93,16 @@ public class SpaceshipScript : MonoBehaviour
     }
     void DrivingSpeedTurningAndMore()
     {
+        hexagonFuselage.color = colorHexagonFuselage;
+        hexagonFuselage1.color = colorHexagonFuselage;
+        hexagonFuselage2.color = colorHexagonFuselage;
+        hexagonFuselage3.color = colorHexagonFuselage;
+        hexagonFuselage4.color = colorHexagonFuselage;
+        undercarriageTriangle.color = colorUndercarriageTriangle;
+        undercarriageTriangle1.color = colorUndercarriageTriangle;
+        cockpitWindow.color = colorCockpitWindow;
+        growthOfTurnRate = determinesTurnRates * 5f;
+        transform.Translate(0f, baseSpeed * Time.deltaTime, 0f, Space.Self);
         if (Input.GetKeyDown(KeyCode.Space))
         {
 
@@ -116,15 +126,16 @@ public class SpaceshipScript : MonoBehaviour
                 determinesTurnRates = baseSpeed;
             }
         }
-        growthOfTurnRate = determinesTurnRates * 5f;
-        transform.Translate(0f, baseSpeed * Time.deltaTime, 0f, Space.Self);
+        if (Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.D))
+        {
+            //this is a mix between the blue and green
+            colorHexagonFuselage = new Color(0.05f, 0.28f, 0.38f, 1f);
+            colorUndercarriageTriangle = new Color(0.1f, 0.48f, 0.55f, 1f);
+            colorCockpitWindow = new Color(0.1f, 0.8f, 0.78f, 1f);
+        }
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
         {
-            if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
-            {
-                turnRate = 0f;
-                determinesTurnRates = 0f;
-            }
+
             //om du håller in A eller D så ändras dessa följande stycken vid första framen 
             //så att det blir rätt färg på skeppet och hur snabbt skeppet svänger åt vardera håll
             //det svänger snabbare till vänster än till höger, det baseras på skeppets bashastighet
@@ -215,7 +226,11 @@ public class SpaceshipScript : MonoBehaviour
                         turnRate = determinesTurnRates * 15f;
                     }
                 }
-
+                if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
+                {
+                    turnRate = 0f;
+                    determinesTurnRates = 0f;
+                }
             }
         }
         if (determinesTurnRates == 0f)
@@ -228,38 +243,7 @@ public class SpaceshipScript : MonoBehaviour
             {
                 determinesTurnRates = baseSpeed;
             }
-        }
-        //om man svänger höger eller vänster så ändras variablerna med färgerna till blå eller grön respektive
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D))
-        {
-            hexagonFuselage.color = colorHexagonFuselage;
-            hexagonFuselage1.color = colorHexagonFuselage;
-            hexagonFuselage2.color = colorHexagonFuselage;
-            hexagonFuselage3.color = colorHexagonFuselage;
-            hexagonFuselage4.color = colorHexagonFuselage;
-            undercarriageTriangle.color = colorUndercarriageTriangle;
-            undercarriageTriangle1.color = colorUndercarriageTriangle;
-            cockpitWindow.color = colorCockpitWindow;
-        }
-        //if (Input.GetKey(KeyCode.D) == false && Input.GetKey(KeyCode.A) == false)
-        {
-            //om man inte svänger så höjs radien på din sväng graduellt, om turn raten är hög så sänks den snabbare
-            //och den är som lägst 
-            //float turnRatesDecayRate = 90;
-            //if (turnRate <= 290)
-            //{
-            //    turnRatesDecayRate = 90;
-            //}
-            //else if (turnRate > 290)
-            //{
-            //    turnRatesDecayRate = 200;
-            //}
-            //turnRate = turnRate - (turnRatesDecayRate * Time.deltaTime);
-            //if (turnRate <= 145)
-            //{
-            //    turnRate = 145;
-            //}
+            
         }
     }
-
 }
