@@ -22,7 +22,7 @@ public class SpaceshipScript : MonoBehaviour
     float colorBcockpit = 0.3f;
     public float cameraY;
     public float cameraX;
-    public float baseCameraSize = 15f;
+    public float baseCameraSize = 18f;
     //the names vvvvvv correspond to the names of the sprites in unity and every unique callsign should be assigned the same color.
     public SpriteRenderer cockpitWindow;
     public SpriteRenderer undercarriageTriangle;
@@ -45,23 +45,8 @@ public class SpaceshipScript : MonoBehaviour
         //variabeln determinesTurnRates är variabeln som allt som handlar om hur skeppet rör sig 
         //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
         //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
-        RNGSpawnStart();
-        determinesTurnRates = baseSpeed;
-        colorRhexagon = 0.93f;
-        colorGhexagon = 0.1041f;
-        colorBhexagon = 0.944f;
-        colorRtriangle = 0.9902f;
-        colorGtriangle = 0.4764f;
-        colorBtriangle = 1f;
-        colorRcockpit = 0.923f;
-        colorGcockpit = 0.748f;
-        colorBcockpit = 1f;
-
-    }
-    void DrivingSpeedTurningAndMoreStart()
-    {
-        determinesTurnRates = baseSpeed;
-
+        BorderGuardStart();
+        
     }
     // Update is called once per frame
     void Update()
@@ -77,32 +62,33 @@ public class SpaceshipScript : MonoBehaviour
     }
     void BorderGuardStart()
     {
-        baseCameraSize = CameraMain.orthographicSize;
+        //denna funktion måste kallas i Start om void BorderGuard() ska funka i Update.
+        //kamerans storlek bestäms av variabeln baseCameraSize som man man lägg in själv eller som är 18f.
+        //cameraY bestäms som att ha samma värde som camerans orthografiska storlek
+        //cameraX bestäms med ett värde som är i skala med cameraY eftersom förhållander mellan camerans Y och X
+        //är 16:9
+        //rngX och rngY bestämmer vart skeppet ska spawna i början, den baseras på hur stor skärmen är (cameraX och cameraY)
+        //baseSpeed rng:as från ett tal
+        CameraMain.orthographicSize = baseCameraSize;
         cameraY = CameraMain.orthographicSize;
         cameraX = cameraY * (16 / 9);
         float rngX;
         float rngY;
-        rngX = Random.Range(Neg(cameraX), cameraX);
         rngY = Random.Range(Neg(cameraY), cameraY);
-
+        rngX = Random.Range(Neg(cameraX), cameraX);
         PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(10f, 40f);
+        baseSpeed = Random.Range(cameraY * 0.75f, cameraY * 3.75f);
+        determinesTurnRates = baseSpeed;
     }
     void BorderGuard()
     {
-        //this is the length of half the Y axis
         cameraY = cameraY + Time.deltaTime;
-        //this is the length of half the X axis
-
         CameraMain.orthographicSize = cameraY;
         cameraX = cameraY * (16f / 9f);
-
         float shipY;
         float shipX;
-
         shipY = hexagonFuselage4.transform.position.y;
         shipX = hexagonFuselage4.transform.position.x;
-
         if (shipY > cameraY)
         {
             transform.Translate(0f, -2f * cameraY, 0f, Space.World);
