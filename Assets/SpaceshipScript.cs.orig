@@ -44,8 +44,25 @@ public class SpaceshipScript : MonoBehaviour
     {
         //variabeln determinesTurnRates är variabeln som allt som handlar om hur skeppet rör sig 
         //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
-        //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
-        RNGSpawnStart();
+        //baseSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
+        DrivingSpeedTurningAndMoreStart();
+        BorderGuardStart();
+
+    }
+    void BorderGuardStart()
+    {
+        baseCameraSize = CameraMain.orthographicSize;
+        cameraY = CameraMain.orthographicSize;
+        cameraX = cameraY * (16 / 9);
+        float rngX;
+        float rngY;
+        rngX = Random.Range(Neg(cameraX), cameraX);
+        rngY = Random.Range(Neg(cameraY), cameraY);
+        PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
+        baseSpeed = Random.Range(10f, 40f);
+    }
+    void DrivingSpeedTurningAndMoreStart()
+    {
         determinesTurnRates = baseSpeed;
         colorRhexagon = 0.93f;
         colorGhexagon = 0.1041f;
@@ -56,12 +73,6 @@ public class SpaceshipScript : MonoBehaviour
         colorRcockpit = 0.923f;
         colorGcockpit = 0.748f;
         colorBcockpit = 1f;
-
-    }
-    void DrivingSpeedTurningAndMoreStart()
-    {
-        determinesTurnRates = baseSpeed;
-
     }
     // Update is called once per frame
     void Update()
@@ -75,34 +86,17 @@ public class SpaceshipScript : MonoBehaviour
         //sämst
         timerCount = timerCount + Time.deltaTime;
     }
-    void BorderGuardStart()
-    {
-        baseCameraSize = CameraMain.orthographicSize;
-        cameraY = CameraMain.orthographicSize;
-        cameraX = cameraY * (16 / 9);
-        float rngX;
-        float rngY;
-        rngX = Random.Range(Neg(cameraX), cameraX);
-        rngY = Random.Range(Neg(cameraY), cameraY);
-
-        PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(10f, 40f);
-    }
     void BorderGuard()
     {
         //this is the length of half the Y axis
         cameraY = cameraY + Time.deltaTime;
         //this is the length of half the X axis
-
         CameraMain.orthographicSize = cameraY;
         cameraX = cameraY * (16f / 9f);
-
         float shipY;
         float shipX;
-
         shipY = hexagonFuselage4.transform.position.y;
         shipX = hexagonFuselage4.transform.position.x;
-
         if (shipY > cameraY)
         {
             transform.Translate(0f, -2f * cameraY, 0f, Space.World);
