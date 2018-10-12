@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SpaceshipScript : MonoBehaviour
 {
+    int hacTimer;
+    int clock = 0;
     float timerCount = 1;
     float growthOfTurnRate;
     float timerExtra;
@@ -46,7 +48,8 @@ public class SpaceshipScript : MonoBehaviour
         //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
         //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
         BorderGuardStart();
-        
+        clock = 0;
+        hacTimer = 0;
     }
     // Update is called once per frame
     void Update()
@@ -57,8 +60,34 @@ public class SpaceshipScript : MonoBehaviour
     }
     void Timer()
     {
-        //sämst
+        //det ända problemet att undvika har varit att ibland blir timerCount printat med samma heltal, alltså
         timerCount = timerCount + Time.deltaTime;
+        if (timerCount + Time.deltaTime > Mathf.CeilToInt(timerCount))
+        {
+            clock = Mathf.FloorToInt(timerCount);
+            clock = clock + 1;
+            if (clock == hacTimer)
+            {
+                
+            }
+            else if (clock > timerCount && clock < timerCount + 1)
+            {
+                clock = clock + 1;
+                if (clock > timerCount)
+                {
+                    clock = Mathf.CeilToInt(timerCount);
+                }
+                Debug.Log(clock+" " + timerCount);
+                hacTimer = clock;
+
+            }
+            else if (clock > timerCount + 1)
+            {
+                clock = clock - 1;
+                Debug.Log(clock+" "+timerCount);
+                hacTimer = clock;
+            }
+        }
     }
     void BorderGuardStart()
     {
