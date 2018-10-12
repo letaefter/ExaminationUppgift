@@ -11,15 +11,18 @@ public class SpaceshipScript : MonoBehaviour
     public float baseSpeed;
     float determinesTurnRates;
     public Transform PerkTransfrom;
-    float colorRhexagon;
-    float colorGhexagon;
-    float colorBhexagon;
-    float colorRtriangle;
-    float colorGtriangle;
-    float colorBtriangle;
-    float colorRcockpit;
-    float colorGcockpit;
-    float colorBcockpit;
+    float colorRhexagon = 1f;
+    float colorGhexagon = 0.5f;
+    float colorBhexagon = 0.6f;
+    float colorRtriangle = 0.2f;
+    float colorGtriangle = 0.35f;
+    float colorBtriangle = 0.43f;
+    float colorRcockpit = 0.76f;
+    float colorGcockpit = 0.12f;
+    float colorBcockpit = 0.3f;
+    public float cameraY;
+    public float cameraX;
+    public float baseCameraSize = 15f;
     //the names vvvvvv correspond to the names of the sprites in unity and every unique callsign should be assigned the same color.
     public SpriteRenderer cockpitWindow;
     public SpriteRenderer undercarriageTriangle;
@@ -33,6 +36,8 @@ public class SpaceshipScript : MonoBehaviour
     public Color colorUndercarriageTriangle;
     public Color colorCockpitWindow;
     //not anymore ^^^^^^^^^ do they
+    public Camera CameraMain;
+
 
     // Use this for initialization
     void Start()
@@ -40,74 +45,93 @@ public class SpaceshipScript : MonoBehaviour
         //variabeln determinesTurnRates är variabeln som allt som handlar om hur skeppet rör sig 
         //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
         //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
-        RNGSpawnStart();
+        DrivingSpeedTurningAndMoreStart();
+        BorderGuardStart();
+    }
+    void DrivingSpeedTurningAndMoreStart()
+    {
         determinesTurnRates = baseSpeed;
 
     }
-    void RNGSpawnStart()
-    {
-        //här randomiseras två variabler som representerar X och Y.
-        //X variabeln randomiseras mellan 32 till 96
-        //och sedan subtraheras hela X's längd ifrån så effektivt
-        //är rangen ifrån -32f till 32f vilket är innanför synfältet och gränsen.
-        //Samma med Y fast från 18f till 54f och subraherat med 36.
-        //sedan transformar jag Parenten till alla spritekomponenter
-        //på mitt skepp till koordinaterna som jag har fått
-        //i Space.World som betyder att den utgår ifrån kamerans
-        //position därför kameran är parent till min Sprite som
-        //är parent till resten av alla sprites i mitt skepp.
-        float rngX;
-        float rngY;
-        rngX = Random.Range(32f, 96f);
-        rngY = Random.Range(18f, 54f);
-        rngX = rngX - 64f;
-        rngY = rngY - 36f;
-        PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(10f, 21f);
-    }
-
     // Update is called once per frame
     void Update()
     {
         Timer();
-        BorderGuard();
         DrivingSpeedTurningAndMore();
+        BorderGuard();
     }
     void Timer()
     {
         //sämst
         timerCount = timerCount + Time.deltaTime;
     }
+    void BorderGuardStart()
+    {
+        baseCameraSize = CameraMain.orthographicSize;
+        cameraY = CameraMain.orthographicSize;
+        cameraX = cameraY * (16 / 9);
+        float rngX;
+        float rngY;
+        rngX = Random.Range(Neg(cameraX), cameraX);
+        rngY = Random.Range(Neg(cameraY), cameraY);
+
+        PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
+        baseSpeed = Random.Range(10f, 40f);
+    }
     void BorderGuard()
     {
-        //if you leave the coordinates which are covered by the camera you will be sent to the opposite coordinates on that vector
-        //nedan så sätter jag så att skeppets X och Y koordinater mäts av två variabler.
-        //själva skeppet är ett child till kameran och därför mäts koordinaterna ifrån kamerans position där x0 och y0 är mittpunkten
-        float SpaceshipValueOfX = transform.position.x;
-        float SpaceshipValueOfY = transform.position.y;
-        //nedan så säger jag att om skeppets X koordinat är större än kamerans gränser så ska den skickas till andra sidan av kameran dock med samma Y koordinat
-        //kamerans storlek är X = -32 till x = 32 och därför skickas man bak 64 på X och på y är den +-18 så man skickas 36 steg back eller fram
-        if (SpaceshipValueOfX > 32f)
+        //this is the length of half the Y axis
+        cameraY = cameraY + Time.deltaTime;
+        //this is the length of half the X axis
+
+        CameraMain.orthographicSize = cameraY;
+        cameraX = cameraY * (16f / 9f);
+
+        float shipY;
+        float shipX;
+
+        shipY = hexagonFuselage4.transform.position.y;
+        shipX = hexagonFuselage4.transform.position.x;
+
+        if (shipY > cameraY)
         {
-            transform.Translate(-64f, 0f, 0f, Space.World);
+            transform.Translate(0f, -2f * cameraY, 0f, Space.World);
         }
-        else if (SpaceshipValueOfX < -32f)
+        if (shipY < Neg(cameraY))
         {
-            transform.Translate(64f, 0f, 0f, Space.World);
+            transform.Translate(0f, 2f * cameraY, 0f, Space.World);
         }
-        if (SpaceshipValueOfY > 18f)
+        if (shipX > cameraX)
         {
-            transform.Translate(0f, -36f, 0f, Space.World);
+            transform.Translate(-2f * cameraX, 0f, 0f, Space.World);
         }
-        else if (SpaceshipValueOfY < -18f)
+        if (shipX < Neg(cameraX))
         {
-            transform.Translate(0f, 36f, 0f, Space.World);
+            transform.Translate(2f * cameraX, 0f, 0f, Space.World);
         }
+    }
+    //gör en negativ version av ett nummer....
+    float Neg(float value)
+    {
+        float ret;
+        ret = value - (2 * value);
+        return ret;
     }
     void DrivingSpeedTurningAndMore()
     {
         growthOfTurnRate = determinesTurnRates * 5f;
         transform.Translate(0f, baseSpeed * Time.deltaTime, 0f, Space.Self);
+        colorHexagonFuselage = new Color(colorRhexagon, colorGhexagon, colorBhexagon, 1f);
+        colorUndercarriageTriangle = new Color(colorRtriangle, colorGtriangle, colorBtriangle, 1f);
+        colorCockpitWindow = new Color(colorRcockpit, colorGcockpit, colorBcockpit, 1f);
+        hexagonFuselage.color = colorHexagonFuselage;
+        hexagonFuselage1.color = colorHexagonFuselage;
+        hexagonFuselage2.color = colorHexagonFuselage;
+        hexagonFuselage3.color = colorHexagonFuselage;
+        hexagonFuselage4.color = colorHexagonFuselage;
+        undercarriageTriangle.color = colorUndercarriageTriangle;
+        undercarriageTriangle1.color = colorUndercarriageTriangle;
+        cockpitWindow.color = colorCockpitWindow;
         if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
         {
             turnRate = 0f;
@@ -160,7 +184,7 @@ public class SpaceshipScript : MonoBehaviour
             //skeppets färg till grön genom att ändra variabler som motsvarar RGB för skeppets.
             //Den ändras också när man håller in A samtidigt som man släpper D därför 
             //annars kan man svänga vänster och fortfarande var blå och vice versa.
-            //Det som faktiskt ändrar färgen är längst ner i denna funktionen
+            //Det som faktiskt ändrar färgen är i första lagret av denna funktionen.
             //det förändrar också turnRate vilket är variabeln
             //som bestämmer hur snabbt man svänger.
             //om man svänger vänster så är turnRate mindre än åt höger.
@@ -250,16 +274,6 @@ public class SpaceshipScript : MonoBehaviour
                 determinesTurnRates = baseSpeed;
             }
         }
-        colorHexagonFuselage = new Color(colorRhexagon, colorGhexagon, colorBhexagon, 1f);
-        colorUndercarriageTriangle = new Color(colorRtriangle, colorGtriangle, colorBtriangle, 1f);
-        colorCockpitWindow = new Color(colorRcockpit, colorGcockpit, colorBcockpit, 1f);
-        hexagonFuselage.color = colorHexagonFuselage;
-        hexagonFuselage1.color = colorHexagonFuselage;
-        hexagonFuselage2.color = colorHexagonFuselage;
-        hexagonFuselage3.color = colorHexagonFuselage;
-        hexagonFuselage4.color = colorHexagonFuselage;
-        undercarriageTriangle.color = colorUndercarriageTriangle;
-        undercarriageTriangle1.color = colorUndercarriageTriangle;
-        cockpitWindow.color = colorCockpitWindow;
+
     }
 }
