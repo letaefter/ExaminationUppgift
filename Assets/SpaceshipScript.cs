@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class SpaceshipScript : MonoBehaviour
 {
-    int hacTimer;
-    int clock = 0;
-    float timerCount = 1;
+    //variables for Timer()
+    float realTimeTimer = 1;
+    int timerVariable1 = 0;
+    float timerVariable2 = 0f;
+    int seconds = 0;
+    int minutes = 0;
+    string timerVariable7;
+    string timerVariable8;
+    //not anymore variables for Timer()
     float growthOfTurnRate;
-    float timerExtra;
     public float turnRate = 145;
     public float baseSpeed;
     float determinesTurnRates;
-    public Transform PerkTransfrom;
     float colorRhexagon = 1f;
     float colorGhexagon = 0.5f;
     float colorBhexagon = 0.6f;
@@ -24,7 +28,7 @@ public class SpaceshipScript : MonoBehaviour
     float colorBcockpit = 0.3f;
     public float cameraY;
     public float cameraX;
-    public float baseCameraSize = 18f;
+    float baseCameraSize;
     //the names vvvvvv correspond to the names of the sprites in unity and every unique callsign should be assigned the same color.
     public SpriteRenderer cockpitWindow;
     public SpriteRenderer undercarriageTriangle;
@@ -39,6 +43,7 @@ public class SpaceshipScript : MonoBehaviour
     public Color colorCockpitWindow;
     //not anymore ^^^^^^^^^ do they
     public Camera CameraMain;
+    public Transform PerkTransfrom;
 
 
     // Use this for initialization
@@ -48,8 +53,7 @@ public class SpaceshipScript : MonoBehaviour
         //och den baseras baseras på vad man har valt för baseSpeed för sitt skepp men ändras inte när 
         //basSpeed ändrar under spelets gång, utan den är baseSpeed's värde i början av spelet
         BorderGuardStart();
-        clock = 0;
-        hacTimer = 0;
+        TimerStart();
     }
     // Update is called once per frame
     void Update()
@@ -58,60 +62,80 @@ public class SpaceshipScript : MonoBehaviour
         DrivingSpeedTurningAndMore();
         BorderGuard();
     }
+    void TimerStart()
+    {
+        realTimeTimer = 0f;
+        seconds = -1;
+        timerVariable7 = "0";
+        timerVariable8 = "0";
+    }
     void Timer()
     {
-        //det ända problemet att undvika har varit att ibland blir timerCount printat med samma heltal, alltså
-        timerCount = timerCount + Time.deltaTime;
-        if (timerCount + Time.deltaTime > Mathf.CeilToInt(timerCount))
+        realTimeTimer = realTimeTimer + Time.deltaTime;
+        if (realTimeTimer > timerVariable1)
         {
-            clock = Mathf.FloorToInt(timerCount);
-            clock = clock + 1;
-            if (clock == hacTimer)
+            seconds = seconds + 1;
+            if (seconds - 1 >= 0)
             {
-                
-            }
-            else if (clock > timerCount && clock < timerCount + 1)
-            {
-                clock = clock + 1;
-                if (clock > timerCount)
+                timerVariable2 = seconds;
+                if (timerVariable2 / 60f >= 0)
                 {
-                    clock = Mathf.CeilToInt(timerCount);
+                    minutes = Mathf.FloorToInt(timerVariable2 / 60f);
                 }
-                Debug.Log(clock+" " + timerCount);
-                hacTimer = clock;
-
+                if (seconds - (60 * minutes) >= 10)
+                {
+                    timerVariable7 = null;
+                }
+                else
+                {
+                    timerVariable7 = "0";
+                }
+                if (minutes >= 10)
+                {
+                    timerVariable8 = null;
+                }
+                else
+                {
+                    timerVariable8 = "0";
+                }
+                if (minutes == 59 && seconds - (60 * minutes) == 59)
+                {
+                    Debug.LogError("YOU HAVE REACHED THE TIME LIMIT UNFORTUNATELY LOL");
+                }
             }
-            else if (clock > timerCount + 1)
-            {
-                clock = clock - 1;
-                Debug.Log(clock+" "+timerCount);
-                hacTimer = clock;
-            }
+            Debug.Log("Timer" + " " + timerVariable8 + "" + minutes + ":" + timerVariable7 + "" + (seconds - (60 * minutes)));
         }
+        timerVariable1 = Mathf.CeilToInt(realTimeTimer);
     }
     void BorderGuardStart()
     {
-        //denna funktion måste kallas i Start om void BorderGuard() ska funka i Update.
-        //kamerans storlek bestäms av variabeln baseCameraSize som man man lägg in själv eller som är 18f.
-        //cameraY bestäms som att ha samma värde som camerans orthografiska storlek
-        //cameraX bestäms med ett värde som är i skala med cameraY eftersom förhållander mellan camerans Y och X
-        //är 16:9
-        //rngX och rngY bestämmer vart skeppet ska spawna i början, den baseras på hur stor skärmen är (cameraX och cameraY)
-        //baseSpeed rng:as från ett tal
+        {
+            //denna funktion måste kallas i Start om void BorderGuard() ska funka i Update.
+            //kamerans storlek bestäms av variabeln baseCameraSize som jag har satt i Start() som 15f för jag orkar inte.
+            //cameraY bestäms som att ha samma värde som camerans orthografiska storlek
+            //cameraX bestäms med ett värde som är i skala med cameraY eftersom förhållander mellan camerans Y och X
+            //är 16:9
+            //rngX och rngY bestämmer vart skeppet ska spawna i början, den baseras på hur stor skärmen är (cameraX och cameraY)
+            //baseSpeed rng:as mellan rimliga värden :)
+        }
+        baseCameraSize = 15f;
         CameraMain.orthographicSize = baseCameraSize;
         cameraY = CameraMain.orthographicSize;
-        cameraX = cameraY * (16 / 9);
+        cameraX = cameraY * (16f / 9f);
         float rngX;
         float rngY;
         rngY = Random.Range(Neg(cameraY), cameraY);
         rngX = Random.Range(Neg(cameraX), cameraX);
         PerkTransfrom.Translate(rngX, rngY, 10f, Space.World);
-        baseSpeed = Random.Range(cameraY * 0.75f, cameraY * 3.75f);
+        baseSpeed = Random.Range(10f, 25f);
         determinesTurnRates = baseSpeed;
+        colorRhexagon = 0f;
+        colorGhexagon = 0f;
+        colorBhexagon = 0f;
     }
     void BorderGuard()
     {
-        cameraY = cameraY + Time.deltaTime;
+        cameraY = cameraY + (Time.deltaTime / 2f);
         CameraMain.orthographicSize = cameraY;
         cameraX = cameraY * (16f / 9f);
         float shipY;
@@ -135,7 +159,7 @@ public class SpaceshipScript : MonoBehaviour
             transform.Translate(2f * cameraX, 0f, 0f, Space.World);
         }
     }
-    //gör en negativ version av ett nummer....
+    //gör en negativ version av ett positivt nummer....
     float Neg(float value)
     {
         float ret;
@@ -144,8 +168,16 @@ public class SpaceshipScript : MonoBehaviour
     }
     void DrivingSpeedTurningAndMore()
     {
+        baseSpeed = baseSpeed + (0.6f * Time.deltaTime); // ta bort hela den här linjen om du inte vill bli snabbare under spelets gång :)
+        determinesTurnRates = baseSpeed;
         growthOfTurnRate = determinesTurnRates * 5f;
         transform.Translate(0f, baseSpeed * Time.deltaTime, 0f, Space.Self);
+        colorRtriangle = colorRhexagon + 0.1f;
+        colorGtriangle = colorGhexagon + 0.1f;
+        colorBtriangle = colorBhexagon + 0.1f;
+        colorRcockpit = colorRhexagon + 0.3f;
+        colorGcockpit = colorGhexagon + 0.3f;
+        colorBcockpit = colorBhexagon + 0.3f;
         colorHexagonFuselage = new Color(colorRhexagon, colorGhexagon, colorBhexagon, 1f);
         colorUndercarriageTriangle = new Color(colorRtriangle, colorGtriangle, colorBtriangle, 1f);
         colorCockpitWindow = new Color(colorRcockpit, colorGcockpit, colorBcockpit, 1f);
@@ -159,29 +191,18 @@ public class SpaceshipScript : MonoBehaviour
         cockpitWindow.color = colorCockpitWindow;
         if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
         {
+            //om man håller in både A och D så blir ju skeppet en blandning mellan blå och grön mang
             turnRate = 0f;
             determinesTurnRates = 0f;
-            colorRhexagon = 0.05f;
-            colorGhexagon = 0.28f;
-            colorBhexagon = 0.38f;
-            colorRtriangle = 0.1f;
-            colorGtriangle = 0.48f;
-            colorBtriangle = 0.55f;
-            colorRcockpit = 0.1f;
-            colorGcockpit = 0.8f;
-            colorBcockpit = 0.78f;
+            colorRhexagon = 0.15f;
+            colorGhexagon = 0.38f;
+            colorBhexagon = 0.48f;
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            colorRhexagon = Random.Range(0f, 1f);
-            colorGhexagon = Random.Range(0f, 1f);
-            colorBhexagon = Random.Range(0f, 1f);
-            colorRtriangle = Random.Range(0f, 1f);
-            colorGtriangle = Random.Range(0f, 1f);
-            colorBtriangle = Random.Range(0f, 1f);
-            colorRcockpit = Random.Range(0f, 1f);
-            colorGcockpit = Random.Range(0f, 1f);
-            colorBcockpit = Random.Range(0f, 1f);
+            colorRhexagon = Random.Range(0f, 0.7f);
+            colorGhexagon = Random.Range(0f, 0.7f);
+            colorBhexagon = Random.Range(0f, 0.7f);
         }
         //om man klickar på S så åker skeppet hälften så snabbt, om man släpper S så åker den lika snabbt igen,
         //variabel determinesTurnRates påverkas också av S därför den ska hela tiden vara baseSpeed's värde
@@ -213,18 +234,13 @@ public class SpaceshipScript : MonoBehaviour
             //det förändrar också turnRate vilket är variabeln
             //som bestämmer hur snabbt man svänger.
             //om man svänger vänster så är turnRate mindre än åt höger.
+            //som sagt är determinesTurnRates baserat på baseSpeed vid Start()
             if (Input.GetKeyDown(KeyCode.A) || Input.GetKey(KeyCode.A) && Input.GetKeyUp(KeyCode.D))
             {
                 //this color is green
                 colorRhexagon = 0.1f;
                 colorGhexagon = 0.55f;
                 colorBhexagon = 0.1f;
-                colorRtriangle = 0.1f;
-                colorGtriangle = 0.75f;
-                colorBtriangle = 0.2f;
-                colorRcockpit = 0.2f;
-                colorGcockpit = 0.99f;
-                colorBcockpit = 0.6f;
                 turnRate = determinesTurnRates * 4.5f;
             }
             if (Input.GetKeyDown(KeyCode.D) || Input.GetKey(KeyCode.D) && Input.GetKeyUp(KeyCode.A))
@@ -233,12 +249,6 @@ public class SpaceshipScript : MonoBehaviour
                 colorRhexagon = 0f;
                 colorGhexagon = 0.075f;
                 colorBhexagon = 0.65f;
-                colorRtriangle = 0.1f;
-                colorGtriangle = 0.2f;
-                colorBtriangle = 0.9f;
-                colorRcockpit = 0f;
-                colorGcockpit = 0.6f;
-                colorBcockpit = 0.95f;
                 turnRate = determinesTurnRates * 15f;
             }
             if (Input.GetKey(KeyCode.A))
